@@ -1,0 +1,58 @@
+function data=actualizadata(N,ano)
+
+if nargin<2  %Actualiza fecha actual
+    fechaf=datetime("today");
+    anostr='2023';
+else
+    if isnumber(ano)
+        anostr=num2str(ano);
+    end
+    fechaf=datetime(['31-12-' num2str(anostr)]);
+end
+load Nasdaq
+load(['fechaNasdaq' anostr]);
+
+for j=1:N
+    acc=tabla{j,1}{1};
+    fileacc=[acc '_' anostr '.mat'];
+    if exist(fileacc,'file')
+        load(fileacc)
+        fechaini=data{end,1}+1;
+    else
+        fechaini=datetime([anostr '-01-01']);
+        data=[];
+    end
+    nerr=0;
+    while(fechaf>fechaini)
+        if day(fechaf-fechaini)>60  %Mayor a 2 meses
+            fechafin=fechaini+60;
+        else
+            fechafin=fechaf;
+        end
+        try
+            data2=extraedata(fechaini,fechafin,tabla{j,1}{1});
+            data=[data;data2];
+            fechaini=fechafin+1;
+            fechareg(j)=data{end,1}+1;
+        catch
+            pause(30)
+            nerr=nerr+1;
+        end
+        if nerr>6
+            te=['Falla ' num2str(nerr) ' acc:' acc ' fecha: ' datestr(fechaini,'dd-mm-yyyy') ' y ' datestr(fechafin,'dd-mm-yyyy')];
+            disp(['Falla ' num2str(nerr) ' acc:' acc ' fecha: ' date)])
+            regout=[regout;
+            break
+        end
+    end
+    if exist('data','var')
+        save(fileacc,'data')
+        save(['fecha_Nasdaq_' anostr '.mat'],'fechareg');
+    end
+end        
+            
+            
+            
+            
+        
+    
